@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<ruleset name="eares">
+	<description>WordPress Coding Standards for the ΕΑΡΕΣ mu-plugins and wp-cli scripts.</description>
+
+	<file>wp-content/mu-plugins</file>
+	<file>scripts</file>
+	<arg name="extensions" value="php"/>
+	<arg name="colors"/>
+	<arg value="sp"/>
+
+	<config name="testVersion" value="8.3-"/>
+	<config name="minimum_wp_version" value="7.0"/>
+
+	<rule ref="WordPress">
+		<!-- mu-plugins are single files named after the feature, not class-*.php. -->
+		<exclude name="WordPress.Files.FileName"/>
+		<!-- Short closures and prefixed constants are deliberate style here. -->
+		<exclude name="Universal.FunctionDeclarations.NoLongClosures"/>
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+		<!-- Short, targeted comments over full docblocks on every closure. -->
+		<exclude name="Squiz.Commenting"/>
+		<exclude name="Generic.Commenting.DocComment"/>
+		<!-- `getenv( 'X' ) ?: $default` is the intended idiom for optional env vars. -->
+		<exclude name="Universal.Operators.DisallowShortTernary"/>
+	</rule>
+	<rule ref="WordPress.Security.ValidatedSanitizedInput">
+		<properties>
+			<property name="customSanitizingFunctions" type="array">
+				<element value="eares_sanitize_phone"/>
+			</property>
+		</properties>
+	</rule>
+	<rule ref="PHPCompatibilityWP"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="eares"/>
+				<element value="default"/>
+			</property>
+		</properties>
+	</rule>
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="eares"/>
+			</property>
+		</properties>
+		<!-- wp-cli eval-files run in their own scope and only call core hooks. -->
+		<exclude-pattern>scripts/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.Capabilities">
+		<properties>
+			<property name="custom_capabilities" type="array">
+				<element value="eares_reset_2fa"/>
+			</property>
+		</properties>
+	</rule>
+	<rule ref="WordPress.WP.PostsPerPage">
+		<exclude-pattern>scripts/*</exclude-pattern>
+	</rule>
+</ruleset>
