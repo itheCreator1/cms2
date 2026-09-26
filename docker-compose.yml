@@ -1,0 +1,113 @@
+# ΕΑΡΕΣ — local development stack.
+#
+#   docker compose up -d          start WordPress, MariaDB and Mailpit
+#   scripts/setup.sh              install/configure WordPress (idempotent)
+#   scripts/seed-users.sh         create one fake test user per role
+#   docker compose --profile tools up -d adminer   optional DB browser
+#
+# Site:    http://localhost:8080  (WP_PORT)
+# Mailpit: http://localhost:8025  (MAILPIT_PORT) — every email the site sends lands here.
+
+x-wp-env: &wp-env
+  WORDPRESS_DB_HOST: db:3306
+  WORDPRESS_DB_NAME: ${DB_NAME}
+  WORDPRESS_DB_USER: ${DB_USER}
+  WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+  WORDPRESS_TABLE_PREFIX: ${DB_TABLE_PREFIX:-wp_}
+  WORDPRESS_DEBUG: ${WP_DEBUG:-0}
+  WP_ENVIRONMENT_TYPE: ${WP_ENVIRONMENT_TYPE:-local}
+  # Read by wp-content/mu-plugins/eares-mail.php
+  EARES_SMTP_HOST: ${SMTP_HOST:-mailpit}
+  EARES_SMTP_PORT: ${SMTP_PORT:-1025}
+  EARES_SMTP_USER: ${SMTP_USER:-}
+  EARES_SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+  EARES_SMTP_SECURE: ${SMTP_SECURE:-}
+  EARES_MAIL_FROM: ${MAIL_FROM:-noreply@eares.local}
+  EARES_MAIL_FROM_NAME: ${MAIL_FROM_NAME:-ΕΑΡΕΣ}
+  # Evaluated inside wp-config.php (see the official image's wp-config-docker.php).
+  # File modifications (plugin/theme/core installs, the file editor) are
+  # impossible from the browser; only wp-cli (scripts/setup.sh) may change code.
+  WORDPRESS_CONFIG_EXTRA: |
+    define( 'WP_ENVIRONMENT_TYPE', getenv_docker( 'WP_ENVIRONMENT_TYPE', 'local' ) );
+    define( 'DISALLOW_FILE_EDIT', true );
+    define( 'DISALLOW_FILE_MODS', ! ( defined( 'WP_CLI' ) && WP_CLI ) );
+    define( 'WP_AUTO_UPDATE_CORE', false );
+
+services:
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${DB_NAME}
+      # The application user only has privileges on MARIADB_DATABASE.
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks: [internal]
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  wordpress:
+    image: wordpress:7-php8.3-apache
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      <<: *wp-env
+    ports:
+      - "127.0.0.1:${WP_PORT:-8080}:80"
+    volumes:
+      - wp_data:/var/www/html
+      - ./wp-content/mu-plugins:/var/www/html/wp-content/mu-plugins:ro
+    networks: [internal, web]
+
+  # One-shot wp-cli container used by scripts/*.sh (not started by `up`).
+  wpcli:
+    image: wordpress:cli-php8.3
+    profiles: [cli]
+    # Same uid/gid as www-data in the Apache image, so files stay writable by both.
+    user: "33:33"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      <<: *wp-env
+      HOME: /tmp
+      WP_CLI_CACHE_DIR: /tmp/wp-cli-cache
+    volumes:
+      - wp_data:/var/www/html
+      - ./wp-content/mu-plugins:/var/www/html/wp-content/mu-plugins:ro
+    networks: [internal, web]
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MAILPIT_PORT:-8025}:8025"
+    networks: [internal, web]
+
+  adminer:
+    image: adminer:latest
+    profiles: [tools]
+    depends_on: [db]
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    ports:
+      - "127.0.0.1:${ADMINER_PORT:-8081}:8080"
+    networks: [internal, web]
+
+networks:
+  # No route to the outside world: only the containers above can reach the DB.
+  internal:
+    internal: true
+  web: {}
+
+volumes:
+  db_data:
+  wp_data:
