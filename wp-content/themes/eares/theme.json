@@ -1,0 +1,314 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"settings": {
+		"appearanceTools": true,
+		"useRootPaddingAwareAlignments": true,
+		"layout": {
+			"contentSize": "720px",
+			"wideSize": "1200px"
+		},
+		"color": {
+			"custom": false,
+			"customGradient": false,
+			"defaultPalette": false,
+			"defaultGradients": false,
+			"defaultDuotone": false,
+			"palette": [
+				{ "slug": "parchment", "name": "Περγαμηνή", "color": "#F7F1E6" },
+				{ "slug": "limestone", "name": "Ασβεστόλιθος", "color": "#E9D9B8" },
+				{ "slug": "ink", "name": "Μελάνι", "color": "#231B17" },
+				{ "slug": "stone", "name": "Πέτρα", "color": "#6B625A" },
+				{ "slug": "crimson", "name": "Βυσσινί", "color": "#7A1E23" },
+				{ "slug": "terracotta", "name": "Κεραμιδί", "color": "#A8471F" },
+				{ "slug": "gold", "name": "Χρυσό", "color": "#C9A05A" },
+				{ "slug": "cypress", "name": "Κυπαρισσί", "color": "#1F3B2B" },
+				{ "slug": "white", "name": "Λευκό", "color": "#FFFFFF" }
+			],
+			"gradients": [
+				{
+					"slug": "dusk",
+					"name": "Σούρουπο",
+					"gradient": "linear-gradient(160deg, #3a3330 0%, #231B17 45%, #7A1E23 100%)"
+				}
+			]
+		},
+		"spacing": {
+			"units": [ "px", "em", "rem", "%", "vh", "vw" ],
+			"spacingSizes": [
+				{ "slug": "20", "name": "XS", "size": "0.5rem" },
+				{ "slug": "30", "name": "S", "size": "clamp(0.75rem, 1.5vw, 1rem)" },
+				{ "slug": "40", "name": "M", "size": "clamp(1rem, 2.5vw, 1.5rem)" },
+				{ "slug": "50", "name": "L", "size": "clamp(1.5rem, 4vw, 2.5rem)" },
+				{ "slug": "60", "name": "XL", "size": "clamp(2rem, 6vw, 4rem)" },
+				{ "slug": "70", "name": "XXL", "size": "clamp(3rem, 9vw, 6rem)" }
+			]
+		},
+		"typography": {
+			"fluid": true,
+			"customFontSize": false,
+			"defaultFontSizes": false,
+			"fontSizes": [
+				{ "slug": "small", "name": "Μικρό", "size": "0.875rem", "fluid": false },
+				{ "slug": "medium", "name": "Κανονικό", "size": "1.0625rem", "fluid": false },
+				{ "slug": "large", "name": "Μεγάλο", "size": "1.25rem", "fluid": { "min": "1.125rem", "max": "1.375rem" } },
+				{ "slug": "x-large", "name": "Πολύ μεγάλο", "size": "1.75rem", "fluid": { "min": "1.4rem", "max": "2rem" } },
+				{ "slug": "xx-large", "name": "Τίτλος", "size": "2.5rem", "fluid": { "min": "1.9rem", "max": "3rem" } },
+				{ "slug": "display", "name": "Προβολή", "size": "3.5rem", "fluid": { "min": "2.25rem", "max": "4.25rem" } }
+			],
+			"fontFamilies": [
+				{
+					"slug": "display",
+					"name": "GFS Didot",
+					"fontFamily": "\"GFS Didot\", \"Noto Serif\", Georgia, serif",
+					"fontFace": [
+						{
+							"fontFamily": "GFS Didot",
+							"fontStyle": "normal",
+							"fontWeight": "400",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/gfs-didot-greek-400-normal.woff2" ],
+							"unicodeRange": "U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF"
+						},
+						{
+							"fontFamily": "GFS Didot",
+							"fontStyle": "normal",
+							"fontWeight": "400",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/gfs-didot-greek-ext-400-normal.woff2" ],
+							"unicodeRange": "U+1F00-1FFF"
+						},
+						{
+							"fontFamily": "GFS Didot",
+							"fontStyle": "normal",
+							"fontWeight": "400",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/gfs-didot-latin-400-normal.woff2" ],
+							"unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD"
+						}
+					]
+				},
+				{
+					"slug": "serif",
+					"name": "Noto Serif",
+					"fontFamily": "\"Noto Serif\", Georgia, serif",
+					"fontFace": [
+						{
+							"fontFamily": "Noto Serif",
+							"fontStyle": "normal",
+							"fontWeight": "100 900",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/noto-serif-greek-wght-normal.woff2" ],
+							"unicodeRange": "U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF"
+						},
+						{
+							"fontFamily": "Noto Serif",
+							"fontStyle": "normal",
+							"fontWeight": "100 900",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/noto-serif-greek-ext-wght-normal.woff2" ],
+							"unicodeRange": "U+1F00-1FFF"
+						},
+						{
+							"fontFamily": "Noto Serif",
+							"fontStyle": "normal",
+							"fontWeight": "100 900",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/noto-serif-latin-wght-normal.woff2" ],
+							"unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD"
+						},
+						{
+							"fontFamily": "Noto Serif",
+							"fontStyle": "italic",
+							"fontWeight": "100 900",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/noto-serif-greek-wght-italic.woff2" ],
+							"unicodeRange": "U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF"
+						},
+						{
+							"fontFamily": "Noto Serif",
+							"fontStyle": "italic",
+							"fontWeight": "100 900",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/noto-serif-greek-ext-wght-italic.woff2" ],
+							"unicodeRange": "U+1F00-1FFF"
+						},
+						{
+							"fontFamily": "Noto Serif",
+							"fontStyle": "italic",
+							"fontWeight": "100 900",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/noto-serif-latin-wght-italic.woff2" ],
+							"unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD"
+						}
+					]
+				},
+				{
+					"slug": "sans",
+					"name": "Commissioner",
+					"fontFamily": "Commissioner, \"Segoe UI\", Roboto, sans-serif",
+					"fontFace": [
+						{
+							"fontFamily": "Commissioner",
+							"fontStyle": "normal",
+							"fontWeight": "100 900",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/commissioner-greek-wght-normal.woff2" ],
+							"unicodeRange": "U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF"
+						},
+						{
+							"fontFamily": "Commissioner",
+							"fontStyle": "normal",
+							"fontWeight": "100 900",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/commissioner-latin-wght-normal.woff2" ],
+							"unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD"
+						}
+					]
+				}
+			]
+		},
+		"shadow": {
+			"defaultPresets": false,
+			"presets": [
+				{ "slug": "card", "name": "Κάρτα", "shadow": "0 1px 2px rgba(35,27,23,.06), 0 8px 24px -12px rgba(35,27,23,.18)" }
+			]
+		}
+	},
+	"styles": {
+		"color": {
+			"background": "var(--wp--preset--color--parchment)",
+			"text": "var(--wp--preset--color--ink)"
+		},
+		"typography": {
+			"fontFamily": "var(--wp--preset--font-family--serif)",
+			"fontSize": "var(--wp--preset--font-size--medium)",
+			"lineHeight": "1.65"
+		},
+		"spacing": {
+			"blockGap": "1.25rem",
+			"padding": {
+				"left": "var(--wp--preset--spacing--40)",
+				"right": "var(--wp--preset--spacing--40)"
+			}
+		},
+		"elements": {
+			"link": {
+				"color": { "text": "var(--wp--preset--color--crimson)" },
+				"typography": { "textDecoration": "underline" },
+				":hover": { "color": { "text": "var(--wp--preset--color--terracotta)" } },
+				":focus-visible": {
+					"outline": { "color": "var(--wp--preset--color--terracotta)", "offset": "2px", "style": "solid", "width": "2px" }
+				}
+			},
+			"heading": {
+				"color": { "text": "var(--wp--preset--color--crimson)" },
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--display)",
+					"fontWeight": "400",
+					"lineHeight": "1.2"
+				}
+			},
+			"h1": { "typography": { "fontSize": "var(--wp--preset--font-size--xx-large)" } },
+			"h2": { "typography": { "fontSize": "var(--wp--preset--font-size--x-large)" } },
+			"h3": { "typography": { "fontSize": "var(--wp--preset--font-size--large)" } },
+			"h4": { "typography": { "fontSize": "var(--wp--preset--font-size--medium)" } },
+			"button": {
+				"color": {
+					"background": "var(--wp--preset--color--crimson)",
+					"text": "var(--wp--preset--color--white)"
+				},
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--sans)",
+					"fontSize": "var(--wp--preset--font-size--small)",
+					"fontWeight": "600",
+					"letterSpacing": "0.02em"
+				},
+				"border": { "radius": "2px" },
+				"spacing": {
+					"padding": { "top": "0.7em", "bottom": "0.7em", "left": "1.4em", "right": "1.4em" }
+				},
+				":hover": {
+					"color": {
+						"background": "var(--wp--preset--color--terracotta)",
+						"text": "var(--wp--preset--color--white)"
+					}
+				}
+			},
+			"caption": {
+				"color": { "text": "var(--wp--preset--color--stone)" },
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--sans)",
+					"fontSize": "var(--wp--preset--font-size--small)"
+				}
+			}
+		},
+		"blocks": {
+			"core/navigation": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--sans)",
+					"fontSize": "0.9375rem",
+					"fontWeight": "500"
+				}
+			},
+			"core/post-date": {
+				"color": { "text": "var(--wp--preset--color--stone)" },
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--sans)",
+					"fontSize": "var(--wp--preset--font-size--small)"
+				}
+			},
+			"core/post-terms": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--sans)",
+					"fontSize": "0.75rem",
+					"fontWeight": "600",
+					"letterSpacing": "0.08em",
+					"textTransform": "uppercase"
+				}
+			},
+			"core/post-title": {
+				"elements": {
+					"link": {
+						"color": { "text": "inherit" },
+						"typography": { "textDecoration": "none" }
+					}
+				}
+			},
+			"core/query-pagination": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--sans)",
+					"fontSize": "var(--wp--preset--font-size--small)"
+				}
+			},
+			"core/loginout": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--sans)",
+					"fontSize": "var(--wp--preset--font-size--small)",
+					"fontWeight": "600"
+				}
+			},
+			"core/search": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--sans)",
+					"fontSize": "var(--wp--preset--font-size--small)"
+				}
+			},
+			"core/quote": {
+				"border": { "left": { "color": "var(--wp--preset--color--gold)", "width": "3px", "style": "solid" } },
+				"spacing": { "padding": { "left": "1.25rem" } },
+				"typography": { "fontStyle": "italic", "fontSize": "var(--wp--preset--font-size--large)" }
+			},
+			"core/separator": {
+				"color": { "text": "var(--wp--preset--color--limestone)" }
+			}
+		}
+	},
+	"templateParts": [
+		{ "name": "header", "title": "Κεφαλίδα", "area": "header" },
+		{ "name": "footer", "title": "Υποσέλιδο", "area": "footer" }
+	],
+	"customTemplates": [
+		{ "name": "page-wide", "title": "Σελίδα πλήρους πλάτους", "postTypes": [ "page" ] }
+	]
+}

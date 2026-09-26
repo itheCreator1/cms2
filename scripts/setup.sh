@@ -5,17 +5,20 @@
 #   docker compose up -d && scripts/setup.sh
 source "$(dirname "$0")/lib.sh"
 
+require_changed_passwords
 wait_for_wordpress
 
 if ! wp core is-installed 2>/dev/null; then
   echo "Installing WordPress..."
+  # The real password is set by set_password (lib.sh), never on a command line.
   wp core install \
     --url="$WP_URL" \
     --title="$WP_TITLE" \
     --admin_user="$WP_ADMIN_USER" \
     --admin_email="$WP_ADMIN_EMAIL" \
-    --admin_password="$WP_ADMIN_PASSWORD" \
+    --admin_password="$(random_password)" \
     --skip-email
+  set_password "$WP_ADMIN_USER" "$WP_ADMIN_PASSWORD"
 fi
 
 echo "Languages: Greek (site default) + English (built in, per-user choice)..."
@@ -58,13 +61,34 @@ if [[ -n "${WP_BACKUP_ADMIN_USER:-}" ]]; then
   if ! wp user get "$WP_BACKUP_ADMIN_USER" --field=ID >/dev/null 2>&1; then
     echo "Creating backup administrator $WP_BACKUP_ADMIN_USER..."
     wp user create "$WP_BACKUP_ADMIN_USER" "$WP_BACKUP_ADMIN_EMAIL" \
-      --role=administrator --user_pass="$WP_BACKUP_ADMIN_PASSWORD"
+      --role=administrator --user_pass="$(random_password)"
+    set_password "$WP_BACKUP_ADMIN_USER" "$WP_BACKUP_ADMIN_PASSWORD"
   fi
 fi
 
 # The mu-plugin rebuilds roles on the first request; trigger it now.
 wp eval 'eares_sync_roles();'
 wp role list --fields=role,name
+
+# Author URLs must not reveal login names (eares-hardening.php). New and
+# updated accounts get the new slug automatically; this converts the rest.
+# shellcheck disable=SC2016 # PHP code, not shell.
+wp eval '
+foreach ( get_users( array( "fields" => array( "ID", "user_login", "user_nicename" ) ) ) as $u ) {
+	if ( eares_member_nicename( $u->user_login ) !== $u->user_nicename ) {
+		wp_update_user( array( "ID" => $u->ID ) );
+		echo "  author slug updated: user {$u->ID}\n";
+	}
+}'
+
+echo "Theme and site structure..."
+wp theme activate eares
+# Keep the newest bundled theme as a fallback; the rest are unused code.
+mapfile -t old_themes < <(wp theme list --field=name | grep '^twenty' | sort | head -n -1)
+if (( ${#old_themes[@]} )); then wp theme delete "${old_themes[@]}"; fi
+wp eval-file - < scripts/setup-content.php
+
+"$ROOT/scripts/update.sh"
 
 echo
 echo "Done. Site: $WP_URL  ·  Admin: $WP_URL/wp-admin  ·  Mail: http://localhost:${MAILPIT_PORT:-8025}"

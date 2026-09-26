@@ -3,7 +3,13 @@
 #   docker compose up -d          start WordPress, MariaDB and Mailpit
 #   scripts/setup.sh              install/configure WordPress (idempotent)
 #   scripts/seed-users.sh         create one fake test user per role
+#   scripts/update.sh             update WordPress core, plugins, translations
+#   scripts/backup.sh             database + uploads into ./backups/
 #   docker compose --profile tools up -d adminer   optional DB browser
+#
+# Image tags are pinned. Bumping the wordpress image changes PHP and Apache
+# only: WordPress core lives in the wp_data volume and is updated by
+# scripts/update.sh, never by pulling a newer image.
 #
 # Site:    http://localhost:8080  (WP_PORT)
 # Mailpit: http://localhost:8025  (MAILPIT_PORT) — every email the site sends lands here.
@@ -24,6 +30,9 @@ x-wp-env: &wp-env
   EARES_SMTP_SECURE: ${SMTP_SECURE:-}
   EARES_MAIL_FROM: ${MAIL_FROM:-noreply@eares.local}
   EARES_MAIL_FROM_NAME: ${MAIL_FROM_NAME:-ΕΑΡΕΣ}
+  # Reverse proxy / HTTPS (see .env.example).
+  EARES_TRUST_PROXY: ${TRUST_PROXY:-0}
+  EARES_FORCE_SSL_ADMIN: ${FORCE_SSL_ADMIN:-0}
   # Evaluated inside wp-config.php (see the official image's wp-config-docker.php).
   # File modifications (plugin/theme/core installs, the file editor) are
   # impossible from the browser; only wp-cli (scripts/setup.sh) may change code.
@@ -32,6 +41,10 @@ x-wp-env: &wp-env
     define( 'DISALLOW_FILE_EDIT', true );
     define( 'DISALLOW_FILE_MODS', ! ( defined( 'WP_CLI' ) && WP_CLI ) );
     define( 'WP_AUTO_UPDATE_CORE', false );
+    define( 'FORCE_SSL_ADMIN', '1' === getenv_docker( 'EARES_FORCE_SSL_ADMIN', '0' ) );
+    if ( '1' === getenv_docker( 'EARES_TRUST_PROXY', '0' ) && 'https' === ( $$_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '' ) ) {
+      $$_SERVER['HTTPS'] = 'on';
+    }
 
 services:
   db:
@@ -53,7 +66,7 @@ services:
       retries: 30
 
   wordpress:
-    image: wordpress:7-php8.3-apache
+    image: wordpress:7.1-php8.3-apache
     restart: unless-stopped
     depends_on:
       db:
@@ -65,11 +78,12 @@ services:
     volumes:
       - wp_data:/var/www/html
       - ./wp-content/mu-plugins:/var/www/html/wp-content/mu-plugins:ro
+      - ./wp-content/themes/eares:/var/www/html/wp-content/themes/eares:ro
     networks: [internal, web]
 
   # One-shot wp-cli container used by scripts/*.sh (not started by `up`).
   wpcli:
-    image: wordpress:cli-php8.3
+    image: wordpress:cli-2.12-php8.3
     profiles: [cli]
     # Same uid/gid as www-data in the Apache image, so files stay writable by both.
     user: "33:33"
@@ -83,17 +97,18 @@ services:
     volumes:
       - wp_data:/var/www/html
       - ./wp-content/mu-plugins:/var/www/html/wp-content/mu-plugins:ro
+      - ./wp-content/themes/eares:/var/www/html/wp-content/themes/eares:ro
     networks: [internal, web]
 
   mailpit:
-    image: axllent/mailpit:latest
+    image: axllent/mailpit:v1.31
     restart: unless-stopped
     ports:
       - "127.0.0.1:${MAILPIT_PORT:-8025}:8025"
     networks: [internal, web]
 
   adminer:
-    image: adminer:latest
+    image: adminer:6.1.1
     profiles: [tools]
     depends_on: [db]
     environment:

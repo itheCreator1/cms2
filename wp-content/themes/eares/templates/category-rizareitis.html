@@ -1,0 +1,39 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","layout":{"type":"constrained","contentSize":"1200px"}} -->
+<main class="wp-block-group">
+	<!-- wp:group {"align":"wide","className":"eares-page-head","layout":{"type":"default"}} -->
+	<div class="wp-block-group alignwide eares-page-head">
+		<!-- wp:paragraph {"className":"eares-eyebrow"} -->
+		<p class="eares-eyebrow">Η εφημερίδα μας</p>
+		<!-- /wp:paragraph -->
+		<!-- wp:query-title {"type":"archive","showPrefix":false} /-->
+		<!-- wp:term-description /-->
+	</div>
+	<!-- /wp:group -->
+	<!-- wp:query {"queryId":31,"query":{"inherit":true},"align":"wide","className":"eares-grid eares-covers"} -->
+	<div class="wp-block-query alignwide eares-grid eares-covers">
+		<!-- wp:post-template {"layout":{"type":"grid","minimumColumnWidth":"13rem"}} -->
+			<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"3/4","sizeSlug":"medium_large"} /-->
+			<!-- wp:post-title {"level":2,"isLink":true} /-->
+			<!-- wp:post-date /-->
+		<!-- /wp:post-template -->
+		<!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"space-between"}} -->
+			<!-- wp:query-pagination-previous {"label":"Νεότερα"} /-->
+			<!-- wp:query-pagination-numbers /-->
+			<!-- wp:query-pagination-next {"label":"Παλαιότερα"} /-->
+		<!-- /wp:query-pagination -->
+		<!-- wp:query-no-results -->
+			<!-- wp:paragraph -->
+			<p>Δεν έχουν αναρτηθεί ακόμη φύλλα.</p>
+			<!-- /wp:paragraph -->
+		<!-- /wp:query-no-results -->
+	</div>
+	<!-- /wp:query -->
+	<!-- wp:spacer {"height":"var:preset|spacing|60"} -->
+	<div style="height:var(--wp--preset--spacing--60)" aria-hidden="true" class="wp-block-spacer"></div>
+	<!-- /wp:spacer -->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

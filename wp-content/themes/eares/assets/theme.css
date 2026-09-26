@@ -1,0 +1,585 @@
+/*
+ * What theme.json cannot express: ornaments, the hero overlay, card and
+ * notice styles, the dense news list. Colours come from the theme.json
+ * palette (--wp--preset--color--*).
+ */
+
+:root {
+	--eares-rule: color-mix(in srgb, var(--wp--preset--color--limestone) 80%, var(--wp--preset--color--stone));
+	--eares-radius: 3px;
+}
+
+/* Template parts sit flush; each section sets its own spacing. */
+.wp-site-blocks > * + * {
+	margin-block-start: 0;
+}
+
+/* Small, letter-spaced labels ("Ανακοίνωση", "Πρωτοσέλιδο", …). */
+.eares-eyebrow {
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--terracotta);
+	margin: 0;
+}
+
+/* ---------- Header ---------- */
+
+.eares-topbar {
+	background: var(--wp--preset--color--crimson);
+	color: var(--wp--preset--color--parchment);
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: var(--wp--preset--font-size--small);
+	padding-block: 0.35rem;
+}
+
+.eares-topbar p {
+	margin: 0;
+	letter-spacing: 0.03em;
+}
+
+.eares-topbar a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.eares-topbar a:hover,
+.eares-topbar a:focus-visible {
+	color: var(--wp--preset--color--gold);
+	text-decoration: underline;
+}
+
+.eares-masthead {
+	background: var(--wp--preset--color--parchment);
+	border-bottom: 1px solid var(--eares-rule);
+	padding-block: var(--wp--preset--spacing--30);
+}
+
+.eares-masthead__inner {
+	gap: var(--wp--preset--spacing--30) var(--wp--preset--spacing--50);
+}
+
+.eares-brand {
+	gap: 0.85rem;
+	align-items: center;
+}
+
+.eares-brand__mark,
+.eares-brand__mark img {
+	margin: 0;
+	flex: none;
+}
+
+.eares-brand__text {
+	gap: 0.1rem;
+}
+
+.eares-brand__name {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.9rem;
+	font-weight: 400;
+	line-height: 1;
+	letter-spacing: 0.18em;
+}
+
+.eares-brand__name a {
+	color: var(--wp--preset--color--crimson);
+	text-decoration: none;
+}
+
+.eares-brand__tagline {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: 0.8125rem;
+	line-height: 1.3;
+	color: var(--wp--preset--color--stone);
+	max-width: 22rem;
+}
+
+.eares-nav-wrap {
+	gap: var(--wp--preset--spacing--30);
+}
+
+.eares-nav .wp-block-navigation-item__content {
+	padding-block: 0.35rem;
+	border-bottom: 2px solid transparent;
+	text-decoration: none;
+}
+
+.eares-nav .wp-block-navigation-item__content:hover,
+.eares-nav .current-menu-item > .wp-block-navigation-item__content {
+	border-bottom-color: var(--wp--preset--color--crimson);
+	color: var(--wp--preset--color--crimson);
+}
+
+.eares-nav .wp-block-navigation__responsive-container.is-menu-open {
+	padding: var(--wp--preset--spacing--50);
+}
+
+.eares-nav .is-menu-open .wp-block-navigation__responsive-container-content,
+.eares-nav .is-menu-open .wp-block-navigation__container {
+	align-items: flex-start !important;
+}
+
+.eares-nav .is-menu-open .wp-block-navigation__container {
+	gap: 0.75rem;
+	border-top: 1px solid var(--eares-rule);
+	padding-top: var(--wp--preset--spacing--40);
+	width: 100%;
+}
+
+.eares-nav .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--x-large);
+	font-weight: 400;
+}
+
+/* ---------- Ornaments ---------- */
+
+.wp-block-separator.is-style-ornament {
+	border: 0;
+	height: 28px;
+	max-width: 18rem;
+	margin-inline: auto;
+	background:
+		url("ornament.svg") center / 28px 28px no-repeat,
+		linear-gradient(var(--eares-rule), var(--eares-rule)) left center / calc(50% - 22px) 1px no-repeat,
+		linear-gradient(var(--eares-rule), var(--eares-rule)) right center / calc(50% - 22px) 1px no-repeat;
+	opacity: 1;
+}
+
+.eares-footer::before {
+	content: "";
+	display: block;
+	height: 20px;
+	margin-bottom: var(--wp--preset--spacing--50);
+	background: url("meander.svg") left center / 20px 20px repeat-x;
+	opacity: 0.55;
+}
+
+/* ---------- Hero ---------- */
+
+.eares-hero.wp-block-cover {
+	/* Line the text up with the 1200px sections below it. */
+	padding: var(--wp--preset--spacing--70) max(var(--wp--style--root--padding-left), calc((100% - 1200px) / 2 + var(--wp--style--root--padding-left)));
+}
+
+/* Only over the photo; the no-photo fallback keeps its dusk gradient. */
+.eares-hero:has(> img) .wp-block-cover__background {
+	/* Darken the right, where the text sits, and leave the dome lit. */
+	background: linear-gradient(260deg, rgb(35 27 23 / 0.85) 0%, rgb(35 27 23 / 0.6) 40%, rgb(35 27 23 / 0) 70%) !important;
+	opacity: 1 !important;
+}
+
+.eares-hero .wp-block-cover__inner-container {
+	width: 100%;
+}
+
+.eares-hero .wp-block-cover__inner-container > .eares-hero__content {
+	margin-inline: 0 !important;
+}
+
+.eares-hero.is-position-center-right .wp-block-cover__inner-container > .eares-hero__content {
+	margin-inline: auto 0 !important;
+}
+
+/* Phones: the text covers the whole photo, so darken all of it evenly. */
+@media (max-width: 781px) {
+	.eares-hero:has(> img) .wp-block-cover__background {
+		background: linear-gradient(180deg, rgb(35 27 23 / 0.35) 0%, rgb(35 27 23 / 0.75) 100%) !important;
+	}
+}
+
+.eares-hero__content {
+	max-width: 38rem;
+}
+
+.eares-hero .eares-eyebrow {
+	color: var(--wp--preset--color--gold);
+}
+
+.eares-hero h1 {
+	color: var(--wp--preset--color--parchment);
+	font-size: var(--wp--preset--font-size--display);
+	line-height: 1.08;
+	margin-block: 0.5rem 1rem;
+	text-wrap: balance;
+}
+
+.eares-hero__lead {
+	color: color-mix(in srgb, var(--wp--preset--color--parchment) 88%, transparent);
+	font-size: var(--wp--preset--font-size--large);
+	max-width: 32rem;
+}
+
+.eares-hero .wp-block-button.is-style-outline .wp-block-button__link {
+	color: var(--wp--preset--color--parchment);
+	border: 1px solid currentColor;
+	background: transparent;
+}
+
+.eares-hero .wp-block-button.is-style-outline .wp-block-button__link:hover {
+	background: var(--wp--preset--color--parchment);
+	color: var(--wp--preset--color--ink);
+}
+
+@media (max-width: 600px) {
+	.eares-hero.wp-block-cover {
+		min-height: 60vh !important;
+	}
+}
+
+/* ---------- Cards, notices ---------- */
+
+.is-style-card {
+	background: var(--wp--preset--color--white);
+	border: 1px solid var(--eares-rule);
+	border-radius: var(--eares-radius);
+	box-shadow: var(--wp--preset--shadow--card);
+	padding: var(--wp--preset--spacing--40);
+}
+
+.is-style-notice {
+	background: var(--wp--preset--color--white);
+	border: 1px solid var(--eares-rule);
+	border-left: 4px solid var(--wp--preset--color--crimson);
+	border-radius: var(--eares-radius);
+	padding: var(--wp--preset--spacing--40) var(--wp--preset--spacing--50);
+}
+
+.eares-pinned {
+	margin-top: calc(-1 * var(--wp--preset--spacing--60));
+	position: relative;
+	z-index: 1;
+}
+
+.eares-pinned:not(:has(li)) {
+	display: none;
+}
+
+.eares-pinned .wp-block-post-template {
+	display: grid;
+	gap: var(--wp--preset--spacing--30);
+}
+
+.eares-pinned .wp-block-post-title {
+	margin-block: 0.25rem 0.5rem;
+}
+
+.eares-pinned .wp-block-post-excerpt__excerpt {
+	margin: 0;
+}
+
+.eares-pinned .wp-block-post-excerpt__more-text {
+	margin: 0.5rem 0 0;
+}
+
+/* ---------- Section headings ---------- */
+
+.eares-section-head {
+	border-bottom: 1px solid var(--eares-rule);
+	padding-bottom: 0.5rem;
+	margin-bottom: var(--wp--preset--spacing--40);
+	align-items: baseline;
+}
+
+.eares-section-head h2 {
+	margin: 0;
+}
+
+.eares-section-head p {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 600;
+}
+
+.eares-section-head a {
+	text-decoration: none;
+}
+
+/* ---------- Front-page bulletin ---------- */
+
+.eares-bulletin {
+	padding-block: var(--wp--preset--spacing--60);
+}
+
+.eares-lead .wp-block-post-featured-image {
+	margin-bottom: 1rem;
+}
+
+.eares-lead .wp-block-post-title {
+	font-size: var(--wp--preset--font-size--x-large);
+	margin-block: 0.35rem 0.5rem;
+}
+
+.eares-newslist {
+	margin-top: var(--wp--preset--spacing--40);
+}
+
+.eares-newslist .wp-block-post-template > li {
+	display: grid;
+	grid-template-columns: 7.5rem 1fr;
+	gap: 0.25rem 1rem;
+	padding-block: 0.85rem;
+	border-top: 1px solid var(--eares-rule);
+}
+
+.eares-newslist .wp-block-post-template > li > * {
+	margin: 0;
+}
+
+.eares-newslist .wp-block-post-date {
+	grid-row: span 2;
+	padding-top: 0.2rem;
+}
+
+.eares-newslist .wp-block-post-title {
+	font-size: var(--wp--preset--font-size--large);
+	line-height: 1.3;
+}
+
+@media (max-width: 600px) {
+	.eares-newslist .wp-block-post-template > li {
+		grid-template-columns: 1fr;
+	}
+
+	.eares-newslist .wp-block-post-date {
+		grid-row: auto;
+	}
+}
+
+.eares-aside > * + * {
+	margin-top: var(--wp--preset--spacing--50);
+}
+
+.eares-issue .wp-block-post-featured-image img {
+	border: 1px solid var(--eares-rule);
+	box-shadow: var(--wp--preset--shadow--card);
+}
+
+.eares-issue .wp-block-post-title {
+	font-size: var(--wp--preset--font-size--large);
+	margin-block: 0.75rem 0.15rem;
+}
+
+.eares-events .wp-block-post-template > li {
+	padding-block: 0.7rem;
+	border-top: 1px solid var(--eares-rule);
+}
+
+.eares-events .wp-block-post-template > li > * {
+	margin: 0;
+}
+
+.eares-events .wp-block-post-title {
+	font-size: var(--wp--preset--font-size--medium);
+	line-height: 1.35;
+}
+
+/* ---------- About, membership ---------- */
+
+.eares-about {
+	background: var(--wp--preset--color--limestone);
+	padding-block: var(--wp--preset--spacing--60);
+}
+
+.eares-about img {
+	border-radius: var(--eares-radius);
+	box-shadow: var(--wp--preset--shadow--card);
+}
+
+.eares-about__quote {
+	font-style: italic;
+	font-size: var(--wp--preset--font-size--large);
+	line-height: 1.6;
+}
+
+.eares-band {
+	background: var(--wp--preset--color--cypress);
+	color: var(--wp--preset--color--parchment);
+	padding-block: var(--wp--preset--spacing--60);
+}
+
+.eares-band :is(h1, h2, h3) {
+	color: var(--wp--preset--color--parchment);
+}
+
+.eares-band .wp-block-button__link {
+	background: var(--wp--preset--color--gold);
+	color: var(--wp--preset--color--ink);
+}
+
+.eares-band .wp-block-button__link:hover {
+	background: var(--wp--preset--color--parchment);
+	color: var(--wp--preset--color--ink);
+}
+
+/* ---------- Archives ---------- */
+
+.eares-page-head {
+	padding-block: var(--wp--preset--spacing--60) var(--wp--preset--spacing--40);
+}
+
+.eares-page-head h1 {
+	margin: 0;
+}
+
+.eares-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	list-style: none;
+	padding: 0;
+	margin: var(--wp--preset--spacing--30) 0 0;
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: var(--wp--preset--font-size--small);
+}
+
+.eares-chips li a {
+	display: inline-block;
+	padding: 0.3rem 0.85rem;
+	border: 1px solid var(--eares-rule);
+	border-radius: 999px;
+	background: var(--wp--preset--color--white);
+	text-decoration: none;
+}
+
+.eares-chips li.current-cat a,
+.eares-chips li a:hover {
+	background: var(--wp--preset--color--crimson);
+	border-color: var(--wp--preset--color--crimson);
+	color: var(--wp--preset--color--white);
+}
+
+.eares-grid .wp-block-post-template {
+	gap: var(--wp--preset--spacing--50);
+}
+
+.eares-grid .wp-block-post-template > li {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.eares-grid .wp-block-post-template > li > * {
+	margin: 0;
+}
+
+.eares-grid .wp-block-post-title {
+	font-size: var(--wp--preset--font-size--large);
+	line-height: 1.3;
+}
+
+.eares-grid .wp-block-post-excerpt__excerpt {
+	margin: 0;
+	color: var(--wp--preset--color--stone);
+}
+
+.eares-grid .wp-block-query-pagination {
+	margin-top: var(--wp--preset--spacing--60);
+}
+
+.eares-covers .wp-block-post-featured-image img {
+	border: 1px solid var(--eares-rule);
+	box-shadow: var(--wp--preset--shadow--card);
+}
+
+/* ---------- Single ---------- */
+
+.eares-single .wp-block-post-title {
+	font-size: var(--wp--preset--font-size--xx-large);
+	text-wrap: balance;
+	margin-block: 0.5rem;
+}
+
+.eares-single .wp-block-post-featured-image img {
+	border-radius: var(--eares-radius);
+}
+
+.eares-postnav {
+	border-top: 1px solid var(--eares-rule);
+	padding-top: var(--wp--preset--spacing--40);
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: var(--wp--preset--font-size--small);
+}
+
+.eares-postnav a {
+	text-decoration: none;
+}
+
+/* ---------- Footer ---------- */
+
+.eares-footer {
+	background: var(--wp--preset--color--cypress);
+	color: color-mix(in srgb, var(--wp--preset--color--parchment) 90%, transparent);
+	padding-block: 0 var(--wp--preset--spacing--40);
+	font-size: var(--wp--preset--font-size--small);
+}
+
+.eares-footer :is(h2, h3) {
+	color: var(--wp--preset--color--gold);
+	font-size: var(--wp--preset--font-size--large);
+}
+
+.eares-footer a {
+	color: var(--wp--preset--color--parchment);
+}
+
+.eares-footer a:hover {
+	color: var(--wp--preset--color--gold);
+}
+
+.eares-footer ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	line-height: 2;
+}
+
+.eares-footer__bottom {
+	border-top: 1px solid rgb(247 241 230 / 0.15);
+	margin-top: var(--wp--preset--spacing--50);
+	padding-top: var(--wp--preset--spacing--30);
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: 0.8125rem;
+}
+
+.eares-footer__bottom p {
+	margin: 0;
+}
+
+/* Phones: one header row (brand + menu button), no top-bar motto. */
+@media (max-width: 781px) {
+	.eares-topbar .wp-block-group > p:first-child {
+		display: none;
+	}
+
+	.eares-topbar .wp-block-group {
+		justify-content: flex-end;
+	}
+
+	.eares-masthead__inner {
+		flex-wrap: nowrap !important;
+	}
+
+	.eares-nav-wrap {
+		gap: 0.25rem;
+	}
+
+	.eares-brand__name {
+		font-size: 1.5rem;
+	}
+
+	.eares-brand__tagline {
+		font-size: 0.75rem;
+	}
+}
+
+.wp-block-query-pagination-numbers {
+	display: flex;
+	gap: 0.75rem;
+}

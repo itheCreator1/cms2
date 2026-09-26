@@ -1,0 +1,20 @@
+{
+    "name": "eares/cms2",
+    "description": "ΕΑΡΕΣ WordPress site: coding-standard tooling only (the site itself runs in Docker).",
+    "type": "project",
+    "license": "proprietary",
+    "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "phpcompatibility/phpcompatibility-wp": "^2.1",
+        "wp-coding-standards/wpcs": "^3.1"
+    },
+    "scripts": {
+        "lint": "phpcs",
+        "fix": "phpcbf"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}

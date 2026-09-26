@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer
+          coverage: none
+      - name: PHP syntax
+        run: for f in wp-content/mu-plugins/*.php wp-content/themes/eares/*.php wp-content/themes/eares/patterns/*.php scripts/*.php; do php -l "$f"; done
+      - name: Coding standards (PHPCS)
+        run: |
+          composer install --no-interaction --no-progress
+          vendor/bin/phpcs
+      - name: Shell scripts (shellcheck)
+        run: shellcheck scripts/*.sh
+
+  smoke:
+    runs-on: ubuntu-24.04
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start the stack
+        run: |
+          cp .env.example .env
+          docker compose up -d --wait
+      - name: Install and configure WordPress
+        run: scripts/setup.sh
+      - name: Seed test users and sample content
+        run: |
+          scripts/seed-users.sh
+          scripts/seed-content.sh
+      - name: Smoke test
+        run: scripts/smoke-test.sh
+      - name: Backup
+        run: scripts/backup.sh
+      - name: Container logs
+        if: failure()
+        run: docker compose logs --no-color
