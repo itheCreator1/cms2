@@ -44,7 +44,7 @@ The public site uses the `eares` block theme in `wp-content/themes/eares/`. It i
 
 - **Look:** crimson, limestone and cypress green, taken from the church photos and the old site. Headings are GFS Didot, text is Noto Serif, and menus and labels are Commissioner. All three are self-hosted with full Greek (including polytonic) and OFL-licensed; no request leaves the site, and the emoji CDN script is off.
 - **Where things are:** colours, fonts and spacing are in `theme.json`. Templates are in `templates/` and `parts/`. Front-page sections and editor patterns (board, ornament divider, membership band) are in `patterns/`. Ornaments and anything `theme.json` can't express are in `assets/theme.css`.
-- **Photos** go in `assets/images/` (see the README there). Without them, the front page falls back to a plain background.
+- **Photos:** the originals are in `assets/pictures/`. `scripts/optimize-photo.sh` makes the resized WebP copies in the theme's `assets/images/` (see the README there).
 - **Editing:** editors write posts and pages in the block editor. Administrators can adjust templates in the Site Editor, but those changes live in the database; to keep them, copy them back into the theme files.
 
 ## Two-factor authentication
@@ -100,6 +100,7 @@ The activity log (Simple History) is visible to Administrators and User Managers
 | `wp-content/mu-plugins/eares-mail.php` | Sends mail over SMTP using the `SMTP_*` settings in `.env` (Mailpit locally). Uses STARTTLS whenever the server offers it. |
 | `wp-content/themes/eares/` | The public site's block theme (see Theme above). |
 | `scripts/setup-content.php` | Categories, menu pages and the static front page (run by `setup.sh`). |
+| `scripts/optimize-photo.sh` | Resizes a photo to WebP for the theme. |
 | `scripts/seed-content.sh` | Fake sample posts for reviewing the theme. Refuses to run in production. |
 | `.github/workflows/ci.yml` | CI: PHP syntax, PHPCS, shellcheck, then the full stack with the smoke test and a backup. |
 

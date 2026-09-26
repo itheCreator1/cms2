@@ -92,6 +92,40 @@ foreach ( $menu_pages as $slug => list( $page_title, $content ) ) {
 	}
 }
 
+// Header photos for pages that do not have one yet, from the theme's photos
+// (copied into the Media Library so editors can swap them).
+require_once ABSPATH . 'wp-admin/includes/image.php';
+require_once ABSPATH . 'wp-admin/includes/media.php';
+require_once ABSPATH . 'wp-admin/includes/file.php';
+$page_photos = array(
+	'i-enosi'          => array( 'church-night', 'Ο ναός της Ριζαρείου Σχολής τη νύχτα' ),
+	'rizareios-scholi' => array( 'school', 'Το κτίριο της Ριζαρείου Εκκλησιαστικής Σχολής' ),
+);
+foreach ( $page_photos as $slug => list( $photo, $alt ) ) {
+	$photo_page = get_page_by_path( $slug );
+	$photo_file = get_theme_file_path( "assets/images/$photo.webp" );
+	if ( ! $photo_page || has_post_thumbnail( $photo_page ) || ! file_exists( $photo_file ) ) {
+		continue;
+	}
+	$photo_tmp = wp_tempnam( $photo );
+	copy( $photo_file, $photo_tmp );
+	$attachment = media_handle_sideload(
+		array(
+			'name'     => "$photo.webp",
+			'tmp_name' => $photo_tmp,
+		),
+		$photo_page->ID,
+		$alt
+	);
+	if ( is_wp_error( $attachment ) ) {
+		WP_CLI::warning( "Photo for $slug: " . $attachment->get_error_message() );
+		continue;
+	}
+	update_post_meta( $attachment, '_wp_attachment_image_alt', $alt );
+	set_post_thumbnail( $photo_page, $attachment );
+	WP_CLI::log( "  photo: $slug" );
+}
+
 update_option( 'show_on_front', 'page' );
 update_option( 'page_on_front', get_page_by_path( 'arxiki' )->ID );
 update_option( 'page_for_posts', get_page_by_path( 'nea' )->ID );

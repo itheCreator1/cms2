@@ -6,7 +6,7 @@
  * Inserter: no
  *
  * The dome photo (assets/images/dome.webp|jpg) with the association's name
- * over the dark sky. Without the photo, a dusk gradient stands in.
+ * on the right, so the lit dome on the left stays in view. Without the photo, a dusk gradient stands in.
  *
  * @package eares
  */
@@ -14,8 +14,8 @@
 $eares_dome = eares_theme_image( 'dome' );
 ?>
 <?php if ( $eares_dome ) : ?>
-<!-- wp:cover {"url":"<?php echo esc_url( $eares_dome ); ?>","dimRatio":50,"overlayColor":"ink","focalPoint":{"x":0.36,"y":0.45},"minHeight":72,"minHeightUnit":"vh","contentPosition":"center left","isDark":true,"align":"full","className":"eares-hero","layout":{"type":"constrained","contentSize":"1200px"}} -->
-<div class="wp-block-cover alignfull is-dark has-custom-content-position is-position-center-left eares-hero" style="min-height:72vh"><span aria-hidden="true" class="wp-block-cover__background has-ink-background-color has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="<?php echo esc_url( $eares_dome ); ?>" style="object-position:36% 45%" data-object-fit="cover" data-object-position="36% 45%"/><div class="wp-block-cover__inner-container">
+<!-- wp:cover {"url":"<?php echo esc_url( $eares_dome ); ?>","dimRatio":50,"overlayColor":"ink","focalPoint":{"x":0.36,"y":0.45},"minHeight":72,"minHeightUnit":"vh","contentPosition":"center right","isDark":true,"align":"full","className":"eares-hero","layout":{"type":"constrained","contentSize":"1200px"}} -->
+<div class="wp-block-cover alignfull is-dark has-custom-content-position is-position-center-right eares-hero" style="min-height:72vh"><span aria-hidden="true" class="wp-block-cover__background has-ink-background-color has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="<?php echo esc_url( $eares_dome ); ?>" style="object-position:36% 45%" data-object-fit="cover" data-object-position="36% 45%"/><div class="wp-block-cover__inner-container">
 <?php else : ?>
 <!-- wp:cover {"dimRatio":100,"gradient":"dusk","minHeight":60,"minHeightUnit":"vh","contentPosition":"center left","isDark":true,"align":"full","className":"eares-hero","layout":{"type":"constrained","contentSize":"1200px"}} -->
 <div class="wp-block-cover alignfull is-dark has-custom-content-position is-position-center-left eares-hero" style="min-height:60vh"><span aria-hidden="true" class="wp-block-cover__background has-background-dim-100 has-background-dim has-background-gradient has-dusk-gradient-background"></span><div class="wp-block-cover__inner-container">
