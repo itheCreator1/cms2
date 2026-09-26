@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: ΕΑΡΕΣ — Hardening
- * Description: Registration off, XML-RPC off, application passwords off, user enumeration limited to logged-in users.
+ * Description: Registration off, XML-RPC off, application passwords off, user enumeration limited to logged-in users, author URLs that do not reveal login names.
  *
  * File editing / plugin installs are disabled in wp-config.php
  * (DISALLOW_FILE_EDIT, DISALLOW_FILE_MODS; see docker-compose.yml).
@@ -52,7 +52,7 @@ add_action(
 	function () {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( ! is_user_logged_in() && isset( $_GET['author'] ) ) {
-			wp_safe_redirect( home_url( '/' ), 301 );
+			wp_safe_redirect( home_url( '/' ), 302 ); // Not 301: browsers would cache it for logged-in visits too.
 			exit;
 		}
 	},
@@ -65,4 +65,27 @@ add_filter(
 	fn( $provider, $name ) => 'users' === $name ? false : $provider,
 	10,
 	2
+);
+
+/**
+ * Author archive slug for a login name. WordPress derives user_nicename from
+ * the login, so /author/<slug>/ links on every post would reveal it. This
+ * slug is stable and unique per login but does not give the login away.
+ */
+function eares_member_nicename( $login ) {
+	return 'member-' . substr( wp_hash( 'eares_nicename|' . $login ), 0, 10 );
+}
+
+add_filter(
+	'wp_pre_insert_user_data',
+	function ( $data, $update, $user_id, $userdata ) {
+		// $data carries user_login only for new users; $userdata always does.
+		$login = $userdata['user_login'] ?? $data['user_login'] ?? '';
+		if ( '' !== $login ) {
+			$data['user_nicename'] = eares_member_nicename( $login );
+		}
+		return $data;
+	},
+	10,
+	4
 );
