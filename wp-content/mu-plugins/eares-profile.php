@@ -102,7 +102,7 @@ add_action(
 	}
 );
 
-/* Personal data export (Tools → Export Personal Data). */
+/* Personal data export and erasure (Tools → Export / Erase Personal Data). */
 add_filter(
 	'wp_privacy_personal_data_exporters',
 	function ( $exporters ) {
@@ -115,7 +115,7 @@ add_filter(
 				if ( $phone ) {
 					$data[] = array(
 						'group_id'    => 'user',
-						'group_label' => __( 'User' ),
+						'group_label' => __( 'User', 'default' ),
 						'item_id'     => 'user-' . $user->ID,
 						'data'        => array(
 							array(
@@ -132,5 +132,26 @@ add_filter(
 			},
 		);
 		return $exporters;
+	}
+);
+
+add_filter(
+	'wp_privacy_personal_data_erasers',
+	function ( $erasers ) {
+		$erasers['eares-phone'] = array(
+			'eraser_friendly_name' => __( 'Τηλέφωνο μέλους', 'eares' ),
+			'callback'             => function ( $email ) {
+				$user    = get_user_by( 'email', $email );
+				$removed = $user && get_user_meta( $user->ID, EARES_META_PHONE, true )
+					&& delete_user_meta( $user->ID, EARES_META_PHONE );
+				return array(
+					'items_removed'  => (bool) $removed,
+					'items_retained' => false,
+					'messages'       => array(),
+					'done'           => true,
+				);
+			},
+		);
+		return $erasers;
 	}
 );
