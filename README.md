@@ -1,6 +1,6 @@
-# cms2 — ΕΑΡΕΣ WordPress
+# cms2 — EARES WordPress
 
-New WordPress site for ΕΑΡΕΣ (Ένωση Αποφοίτων Ριζαρείου Εκκλησιαστικής Σχολής). It runs under Docker Compose and is rebuilt from code: WordPress core, plugins and roles are never changed through the browser.
+New WordPress site for EARES, the Rizarios Ecclesiastical School Alumni Association (ΕΑΡΕΣ, Ένωση Αποφοίτων Ριζαρείου Εκκλησιαστικής Σχολής). It runs under Docker Compose and is rebuilt from code: WordPress core, plugins and roles are never changed through the browser.
 
 ## Quick start (local dev)
 
@@ -26,11 +26,11 @@ To start over from nothing, run `docker compose down -v` and then repeat the qui
 | Role | Who | Can |
 |---|---|---|
 | Administrator | Site admin + 1 backup | Everything |
-| **Διαχειριστής Χρηστών** (`eares_user_manager`) | Office / secretary | Everything an Editor can do. Can also create, edit, delete and change the role of users, and reset their 2FA. **Cannot** see, edit or assign Administrators or other User Managers. |
-| Editor | ΔΣ, Ριζαρείτης editorial team | Publish and edit all content, moderate comments. Their HTML is filtered: no `<script>`, iframes or inline event handlers. |
+| **User Manager** (Διαχειριστής Χρηστών, `eares_user_manager`) | Office / secretary | Everything an Editor can do. Can also create, edit, delete and change the role of users, and reset their 2FA. **Cannot** see, edit or assign Administrators or other User Managers. |
+| Editor | Board members (ΔΣ) and the newspaper's editorial team (Ριζαρείτης) | Publish and edit all content, moderate comments. Their HTML is filtered: no `<script>`, iframes or inline event handlers. |
 | Author | Trusted alumni | Publish their own posts |
 | Contributor | Other alumni | Write drafts and upload images; an Editor publishes them |
-| **Ανενεργός** (`eares_inactive`) | Former board members etc. (case by case) | Nothing. Login is refused and existing sessions are ended. Their posts and name stay on the site. |
+| **Inactive** (Ανενεργός, `eares_inactive`) | Former board members etc. (case by case) | Nothing. Login is refused and existing sessions are ended. Their posts and name stay on the site. |
 
 Self-registration is off. Only Administrators and User Managers create accounts.
 
@@ -40,7 +40,7 @@ The roles are defined in `wp-content/mu-plugins/eares-roles.php`. After you chan
 
 ## Theme
 
-The public site uses the `eares` block theme in `wp-content/themes/eares/`. It is mounted read-only into the containers and activated by `setup.sh`. [`docs/site-map.md`](docs/site-map.md) shows how the old site's sections map onto pages and categories, and what editors do for announcements, newspaper issues and events.
+The public site uses the `eares` block theme in `wp-content/themes/eares/`. It is mounted read-only into the containers and activated by `setup.sh`. [`docs/site-map.md`](docs/site-map.md) shows how the old site's sections map onto pages and categories, and what editors do for announcements, issues of the newspaper (Ριζαρείτης) and events.
 
 - **Look:** crimson, limestone and cypress green, taken from the church photos and the old site. Headings are GFS Didot, text is Noto Serif, and menus and labels are Commissioner. All three are self-hosted with full Greek (including polytonic) and OFL-licensed; no request leaves the site, and the emoji CDN script is off.
 - **Where things are:** colours, fonts and spacing are in `theme.json`. Templates are in `templates/` and `parts/`. Front-page sections and editor patterns (board, ornament divider, membership band) are in `patterns/`. Ornaments and anything `theme.json` can't express are in `assets/theme.css`.
@@ -55,13 +55,13 @@ The public site uses the `eares` block theme in `wp-content/themes/eares/`. It i
 - backup (recovery) codes
 - a code sent by email
 
-If someone is locked out, an Administrator or User Manager opens **Users**, hovers over the person, and clicks **Επαναφορά 2FA**. The reset is recorded in Simple History, and the user gets an email about it.
+If someone is locked out, an Administrator or User Manager opens **Users**, hovers over the person, and clicks **Reset 2FA** (Επαναφορά 2FA). The reset is recorded in Simple History, and the user gets an email about it.
 
 **Before resetting, confirm who is asking.** Hang up and call back the phone number on their profile, never a number given during the call. A reset leaves the account protected by its password alone.
 
 After someone other than the user changes an account's email address, a User Manager cannot reset its 2FA for 7 days; only an Administrator can. This stops "change the email, reset 2FA, reset the password" from taking over an account.
 
-The Greek step-by-step guide for members is in [`docs/2fa-odigos.md`](docs/2fa-odigos.md). It is meant to be exported to PDF and published as a help page.
+The step-by-step guide for members, written in Greek, is in [`docs/2fa-odigos.md`](docs/2fa-odigos.md). It is meant to be exported to PDF and published as a help page.
 
 ## Logins
 
@@ -76,9 +76,9 @@ Author pages use a `member-…` slug instead of the login name (`/author/member-
 Two extra sortable columns:
 
 - **2FA**: on or off.
-- **Τελευταία σύνδεση** (last login): accounts with no login for 12+ months get a red flag.
+- **Last login** (Τελευταία σύνδεση): accounts with no login for 12+ months get a red flag.
 
-The **Χωρίς σύνδεση 12+ μήνες** view lists only the flagged accounts. Nothing happens to them automatically; an admin decides what to do.
+The **No login for 12+ months** view (Χωρίς σύνδεση 12+ μήνες) lists only the flagged accounts. Nothing happens to them automatically; an admin decides what to do.
 
 The activity log (Simple History) is visible to Administrators and User Managers only. User Managers do not see events by or about Administrators and other User Managers.
 
@@ -134,14 +134,14 @@ docker compose exec -T -u www-data wordpress tar -C /var/www/html/wp-content -xz
 ```sh
 composer install && vendor/bin/phpcs   # WordPress coding standards
 shellcheck scripts/*.sh
-scripts/smoke-test.sh                  # needs the stack + seed-users.sh
+scripts/smoke-test.sh                  # needs the stack + seed-users.sh + seed-content.sh
 ```
 
 CI (`.github/workflows/ci.yml`) runs all three on every push.
 
 ## Language
 
-Greek is the site language. Users can switch their admin screens to English from their profile. The ΕΑΡΕΣ additions follow that choice only for the role names; their other labels (columns, phone field, messages) are Greek only.
+Greek is the site language. Users can switch their admin screens to English from their profile. The EARES additions follow that choice only for the role names; their other labels (columns, phone field, messages) are Greek only.
 
 ## Open items before hosting
 
