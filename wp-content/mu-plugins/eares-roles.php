@@ -10,9 +10,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const EARES_ROLES_VERSION = '1';
+const EARES_ROLES_VERSION     = '2';
 const EARES_ROLE_USER_MANAGER = 'eares_user_manager';
-const EARES_ROLE_INACTIVE = 'eares_inactive';
+const EARES_ROLE_INACTIVE     = 'eares_inactive';
 
 /** Custom capability: may clear another user's two-factor settings. */
 const EARES_CAP_RESET_2FA = 'eares_reset_2fa';
@@ -53,6 +53,11 @@ function eares_sync_roles() {
 	if ( ! $editor ) {
 		return; // WordPress is not installed yet.
 	}
+
+	// Raw HTML/JS in posts would let an Editor or User Manager run script in
+	// an Administrator's browser and sidestep the account protections below.
+	// Only Administrators keep unfiltered_html.
+	$editor->remove_cap( 'unfiltered_html' );
 
 	remove_role( EARES_ROLE_USER_MANAGER );
 	add_role(
