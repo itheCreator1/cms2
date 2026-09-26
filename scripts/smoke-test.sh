@@ -30,7 +30,10 @@ check "?author=1 redirects home (302)" "302 $WP_URL/" \
 echo "Login limit:"
 wp transient delete --all >/dev/null
 for _ in 1 2 3 4 5; do login test-editor wrong-password >/dev/null; done
-if login test-editor "$SEED_PASSWORD" | grep -q 'Πάρα πολλές αποτυχημένες'; then
+# Capture first: with pipefail, `curl | grep -q` fails when grep exits early
+# and curl dies of SIGPIPE on a large page, even though grep matched.
+body="$(login test-editor "$SEED_PASSWORD")"
+if grep -q 'Πάρα πολλές αποτυχημένες' <<<"$body"; then
   check "Right password is refused after 5 failures" locked locked
 else
   check "Right password is refused after 5 failures" locked "not locked"
