@@ -22,7 +22,7 @@ jobs:
           tools: composer
           coverage: none
       - name: PHP syntax
-        run: for f in wp-content/mu-plugins/*.php scripts/*.php; do php -l "$f"; done
+        run: for f in wp-content/mu-plugins/*.php wp-content/themes/eares/*.php wp-content/themes/eares/patterns/*.php scripts/*.php; do php -l "$f"; done
       - name: Coding standards (PHPCS)
         run: |
           composer install --no-interaction --no-progress
@@ -41,8 +41,10 @@ jobs:
           docker compose up -d --wait
       - name: Install and configure WordPress
         run: scripts/setup.sh
-      - name: Seed test users
-        run: scripts/seed-users.sh
+      - name: Seed test users and sample content
+        run: |
+          scripts/seed-users.sh
+          scripts/seed-content.sh
       - name: Smoke test
         run: scripts/smoke-test.sh
       - name: Backup

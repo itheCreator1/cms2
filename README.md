@@ -9,7 +9,8 @@ cp .env.example .env        # then change the passwords
 docker compose up -d        # WordPress, MariaDB, Mailpit
 scripts/setup.sh            # install + configure (idempotent, safe to re-run)
 scripts/seed-users.sh       # optional: one fake test user per role
-scripts/smoke-test.sh       # optional: check roles, hardening and the login limit
+scripts/seed-content.sh     # optional: fake sample posts, to review the theme
+scripts/smoke-test.sh       # optional: check roles, hardening, theme and the login limit
 ```
 
 | URL | What |
@@ -36,6 +37,15 @@ Self-registration is off. Only Administrators and User Managers create accounts.
 Only Administrators may post unfiltered HTML. If an Editor or User Manager could, a `<script>` in a post would run in an Administrator's browser and get around every protection above.
 
 The roles are defined in `wp-content/mu-plugins/eares-roles.php`. After you change a capability there, bump `EARES_ROLES_VERSION`; the roles are rebuilt on the next request.
+
+## Theme
+
+The public site uses the `eares` block theme in `wp-content/themes/eares/`. It is mounted read-only into the containers and activated by `setup.sh`. [`docs/site-map.md`](docs/site-map.md) shows how the old site's sections map onto pages and categories, and what editors do for announcements, newspaper issues and events.
+
+- **Look:** crimson, limestone and cypress green, taken from the church photos and the old site. Headings are GFS Didot, text is Noto Serif, and menus and labels are Commissioner. All three are self-hosted with full Greek (including polytonic) and OFL-licensed; no request leaves the site, and the emoji CDN script is off.
+- **Where things are:** colours, fonts and spacing are in `theme.json`. Templates are in `templates/` and `parts/`. Front-page sections and editor patterns (board, ornament divider, membership band) are in `patterns/`. Ornaments and anything `theme.json` can't express are in `assets/theme.css`.
+- **Photos** go in `assets/images/` (see the README there). Without them, the front page falls back to a plain background.
+- **Editing:** editors write posts and pages in the block editor. Administrators can adjust templates in the Site Editor, but those changes live in the database; to keep them, copy them back into the theme files.
 
 ## Two-factor authentication
 
@@ -88,6 +98,9 @@ The activity log (Simple History) is visible to Administrators and User Managers
 | `wp-content/mu-plugins/eares-profile.php` | Private phone field (not exposed through REST; included in personal data export and erasure) and a simplified profile screen. |
 | `wp-content/mu-plugins/eares-hardening.php` | Keeps registration off. Disables XML-RPC and application passwords, which would bypass 2FA. Blocks anonymous access to REST `/users`, `?author=N` and the users sitemap. Gives author pages `member-…` slugs. |
 | `wp-content/mu-plugins/eares-mail.php` | Sends mail over SMTP using the `SMTP_*` settings in `.env` (Mailpit locally). Uses STARTTLS whenever the server offers it. |
+| `wp-content/themes/eares/` | The public site's block theme (see Theme above). |
+| `scripts/setup-content.php` | Categories, menu pages and the static front page (run by `setup.sh`). |
+| `scripts/seed-content.sh` | Fake sample posts for reviewing the theme. Refuses to run in production. |
 | `.github/workflows/ci.yml` | CI: PHP syntax, PHPCS, shellcheck, then the full stack with the smoke test and a backup. |
 
 ## Updating

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# End-to-end checks against a running stack (used by CI, safe locally):
-#   docker compose up -d && scripts/setup.sh && scripts/seed-users.sh && scripts/smoke-test.sh
+# End-to-end checks against a running stack (used by CI, safe locally).
+# Needs seed-users.sh and seed-content.sh data:
+#   docker compose up -d && scripts/setup.sh && scripts/seed-users.sh && scripts/seed-content.sh && scripts/smoke-test.sh
 source "$(dirname "$0")/lib.sh"
 
 failures=0
@@ -26,6 +27,17 @@ check "XML-RPC is refused" 403 "$(status -X POST "$WP_URL/xmlrpc.php")"
 check "Anonymous REST /users is gone" 404 "$(status "$WP_URL/wp-json/wp/v2/users")"
 check "?author=1 redirects home (302)" "302 $WP_URL/" \
   "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' "$WP_URL/?author=1")"
+
+echo "Theme:"
+front="$(curl -s "$WP_URL/")"
+check "Front page uses the ΕΑΡΕΣ theme" yes \
+  "$(grep -q 'eares-theme-css' <<<"$front" && grep -q 'eares-hero' <<<"$front" && echo yes || echo no)"
+check "Front page shows the sticky notice" yes \
+  "$(grep -q 'Έκτακτες εκλογές' <<<"$front" && echo yes || echo no)"
+check "News page /nea/ answers" 200 "$(status "$WP_URL/nea/")"
+check "Ριζαρείτης archive answers" 200 "$(status "$WP_URL/category/rizareitis/")"
+check "No third-party requests (emoji CDN)" no \
+  "$(grep -q 's.w.org' <<<"$front" && echo yes || echo no)"
 
 echo "Login limit:"
 wp transient delete --all >/dev/null

@@ -81,6 +81,13 @@ foreach ( get_users( array( "fields" => array( "ID", "user_login", "user_nicenam
 	}
 }'
 
+echo "Theme and site structure..."
+wp theme activate eares
+# Keep the newest bundled theme as a fallback; the rest are unused code.
+mapfile -t old_themes < <(wp theme list --field=name | grep '^twenty' | sort | head -n -1)
+if (( ${#old_themes[@]} )); then wp theme delete "${old_themes[@]}"; fi
+wp eval-file - < scripts/setup-content.php
+
 "$ROOT/scripts/update.sh"
 
 echo
