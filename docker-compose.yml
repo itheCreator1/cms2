@@ -78,6 +78,7 @@ services:
     volumes:
       - wp_data:/var/www/html
       - ./wp-content/mu-plugins:/var/www/html/wp-content/mu-plugins:ro
+      - ./wp-content/themes/eares:/var/www/html/wp-content/themes/eares:ro
     networks: [internal, web]
 
   # One-shot wp-cli container used by scripts/*.sh (not started by `up`).
@@ -96,6 +97,7 @@ services:
     volumes:
       - wp_data:/var/www/html
       - ./wp-content/mu-plugins:/var/www/html/wp-content/mu-plugins:ro
+      - ./wp-content/themes/eares:/var/www/html/wp-content/themes/eares:ro
     networks: [internal, web]
 
   mailpit:

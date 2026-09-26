@@ -1,0 +1,27 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","className":"eares-single","layout":{"type":"constrained"}} -->
+<main class="wp-block-group eares-single">
+	<!-- wp:group {"className":"eares-page-head","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group eares-page-head">
+		<!-- wp:post-terms {"term":"category"} /-->
+		<!-- wp:post-title {"level":1} /-->
+		<!-- wp:post-date /-->
+	</div>
+	<!-- /wp:group -->
+	<!-- wp:post-featured-image {"align":"wide","sizeSlug":"large"} /-->
+	<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+	<!-- wp:pattern {"slug":"eares/divider"} /-->
+	<!-- wp:group {"className":"eares-postnav","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
+	<div class="wp-block-group eares-postnav">
+		<!-- wp:post-navigation-link {"type":"previous","label":"Προηγούμενο","showTitle":true,"arrow":"arrow"} /-->
+		<!-- wp:post-navigation-link {"label":"Επόμενο","showTitle":true,"arrow":"arrow"} /-->
+	</div>
+	<!-- /wp:group -->
+	<!-- wp:spacer {"height":"var:preset|spacing|60"} -->
+	<div style="height:var(--wp--preset--spacing--60)" aria-hidden="true" class="wp-block-spacer"></div>
+	<!-- /wp:spacer -->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
