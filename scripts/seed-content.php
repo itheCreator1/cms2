@@ -10,6 +10,16 @@ require_once ABSPATH . 'wp-admin/includes/image.php';
 
 $sample_cat = fn( $slug ) => get_category_by_slug( $slug )->term_id;
 
+// wp-cli runs as nobody; sample posts belong to the first Administrator.
+$sample_author = (int) get_users(
+	array(
+		'role'   => 'administrator',
+		'fields' => 'ID',
+		'number' => 1,
+	)
+)[0];
+wp_set_current_user( $sample_author );
+
 $lorem = 'Η Ένωση Αποφοίτων ενημερώνει τα μέλη της. Αυτό είναι δοκιμαστικό κείμενο για τον έλεγχο της εμφάνισης του ιστότοπου· θα αντικατασταθεί από πραγματικό περιεχόμενο πριν από τη δημοσίευση.';
 
 // slug => title, category, days ago, sticky, body.

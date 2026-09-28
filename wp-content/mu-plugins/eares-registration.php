@@ -156,6 +156,39 @@ add_action(
 	5 // Before core sends the emails (priority 10), so they use the real name.
 );
 
+/*
+ * The Administrators' "new registration" email carries what they need to
+ * judge whether the sign-up is a real alumnus: name, graduation year, phone.
+ * (register_new_user above has stored them by the time core sends it.)
+ */
+add_filter(
+	'wp_new_user_notification_email_admin',
+	function ( $email, $user ) {
+		$lines = array(
+			__( 'Νέα εγγραφή μέλους στον ιστότοπο της ΕΑΡΕΣ.', 'eares' ),
+			'',
+			/* translators: %s: full name */
+			sprintf( __( 'Ονοματεπώνυμο: %s', 'eares' ), $user->display_name ),
+			/* translators: %s: graduation year */
+			sprintf( __( 'Έτος αποφοίτησης: %s', 'eares' ), get_user_meta( $user->ID, EARES_META_GRAD_YEAR, true ) ),
+			/* translators: %s: phone number or a dash */
+			sprintf( __( 'Τηλέφωνο: %s', 'eares' ), get_user_meta( $user->ID, EARES_META_PHONE, true ) ?: '—' ),
+			/* translators: %s: email address */
+			sprintf( __( 'Email: %s', 'eares' ), $user->user_email ),
+			/* translators: %s: login name */
+			sprintf( __( 'Όνομα χρήστη: %s', 'eares' ), $user->user_login ),
+			'',
+			__( 'Αν δεν πρόκειται για απόφοιτο, διαγράψτε τον λογαριασμό:', 'eares' ),
+			admin_url( 'user-edit.php?user_id=' . $user->ID ),
+		);
+
+		$email['message'] = implode( "\r\n", $lines ) . "\r\n";
+		return $email;
+	},
+	10,
+	2
+);
+
 /* Wording of the sign-up screen. */
 add_filter(
 	'login_message',

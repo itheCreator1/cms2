@@ -2,10 +2,21 @@
 /**
  * Site structure for the ΕΑΡΕΣ theme: categories, the menu pages and the
  * static front page. Run by setup.sh inside wp-cli. Idempotent: existing
- * pages and categories are left as they are (editors own their content).
+ * pages and categories are left as they are (staff own their content).
  *
  * @package eares
  */
+
+// wp-cli runs as nobody; pages and photos belong to the first Administrator.
+wp_set_current_user(
+	(int) get_users(
+		array(
+			'role'   => 'administrator',
+			'fields' => 'ID',
+			'number' => 1,
+		)
+	)[0]
+);
 
 // Category 1 ("Uncategorized") becomes Νέα, the default for new posts.
 $default_cat = get_term( 1, 'category' );
@@ -93,7 +104,7 @@ foreach ( $menu_pages as $slug => list( $page_title, $content ) ) {
 }
 
 // Header photos for pages that do not have one yet, from the theme's photos
-// (copied into the Media Library so editors can swap them).
+// (copied into the Media Library so staff can swap them).
 require_once ABSPATH . 'wp-admin/includes/image.php';
 require_once ABSPATH . 'wp-admin/includes/media.php';
 require_once ABSPATH . 'wp-admin/includes/file.php';
