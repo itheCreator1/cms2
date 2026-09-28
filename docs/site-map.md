@@ -11,20 +11,24 @@ How the old eares.gr (Joomla) maps onto the new WordPress site. `scripts/setup-c
 | Ρ.Ε.Σ. | Η Σχολή | `/rizareios-scholi/` | Page about the school |
 | Συνδρομές - εισφορές | Συνδρομές | `/syndromes/` | Page |
 | Επικοινωνία | Επικοινωνία | `/epikoinonia/` | Page |
-| Είσοδος μελών (sidebar form) | "Είσοδος μελών" link in the header | `/wp-login.php` | Accounts are created by the office; self-registration stays off |
+| Είσοδος μελών (sidebar form) | "Είσοδος μελών · Εγγραφή" links in the header | `/wp-login.php`, `/wp-login.php?action=register` | Alumni sign up themselves and become Members at once (`eares-registration.php`) |
+| — | Members' area | any private post or page | Visibility → Private; files ticked "Μόνο για μέλη" open only for logged-in members (`eares-members.php`) |
 | Αναζήτηση (sidebar) | Search button in the header | `/?s=` | |
 | Πρωτοσέλιδο (sidebar) | "Ο Ριζαρείτης" card on the front page | | Latest post in the category |
 
 ## Front page, top to bottom
 
 1. Dome photo with the association's name.
-2. Sticky posts as notices ("Καρφίτσωμα στην αρχική" in the post editor), e.g. elections.
+2. Sticky posts as notices (Status → Sticky in the post editor), e.g. elections.
 3. Latest news (left); latest Ριζαρείτης front page and events (right).
 4. The welcome text from the old site, with the church porch photo.
 5. Membership band.
 
-## For editors
+## For staff
 
-- **Announcement at the top of the front page:** tick *Καρφίτσωμα στην αρχική* on the post; untick it when it's over.
+- **Announcement at the top of the front page:** in the post's *Status* panel tick *Sticky*; untick it when it's over.
 - **New Ριζαρείτης issue:** new post in category *Ο Ριζαρείτης*, set the front page as the *featured image*, add the PDF with a *File* block.
 - **Events:** posts in *Εκδηλώσεις*, with date and time in the text.
+- **Members only:** set the post's *Status* to *Private*; tick *Μόνο για μέλη* on any attached file (minutes, statutes).
+
+The step-by-step guides are in Greek: [`odigos-diacheiristi.md`](odigos-diacheiristi.md) for the staff (Administrators) and [`odigos-melous.md`](odigos-melous.md) for members.
