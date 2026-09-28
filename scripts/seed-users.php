@@ -37,6 +37,10 @@ foreach ( $users as $login => list( $email, $user_role, $name, $phone ) ) {
 	if ( is_wp_error( $user_id ) ) {
 		WP_CLI::error( "$login: " . $user_id->get_error_message() );
 	}
+	// Known state for smoke-test.sh: no two-factor on test accounts.
+	foreach ( eares_two_factor_meta_keys() as $key ) {
+		delete_user_meta( $user_id, $key );
+	}
 	update_user_meta( $user_id, 'eares_phone', $phone );
 	update_user_meta( $user_id, 'eares_grad_year', '1998' );
 	WP_CLI::log( "  $login ($user_role) id=$user_id" );
