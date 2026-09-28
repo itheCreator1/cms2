@@ -149,13 +149,18 @@ remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
 remove_action( 'admin_print_styles', 'print_emoji_styles' );
 add_filter( 'emoji_svg_url', '__return_false' );
 
-// Visitors see "Είσοδος μελών" rather than the generic "Log in".
+// Visitors see "Είσοδος μελών · Εγγραφή" rather than the generic "Log in";
+// logged-in members get their profile next to "Log out".
 add_filter(
 	'loginout',
 	function ( $link ) {
 		if ( is_user_logged_in() ) {
-			return $link;
+			return sprintf( '<a href="%s">Το προφίλ μου</a> · %s', esc_url( get_edit_profile_url() ), $link );
 		}
-		return sprintf( '<a href="%s">Είσοδος μελών</a>', esc_url( wp_login_url() ) );
+		$links = sprintf( '<a href="%s">Είσοδος μελών</a>', esc_url( wp_login_url() ) );
+		if ( get_option( 'users_can_register' ) ) {
+			$links .= sprintf( ' · <a href="%s">Εγγραφή</a>', esc_url( wp_registration_url() ) );
+		}
+		return $links;
 	}
 );
