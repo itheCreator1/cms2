@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: ΕΑΡΕΣ — Users admin
- * Description: Last-login tracking, 2FA and Last-login columns on the Users screen, a "Reset 2FA" action, two-factor provider selection and the login block for Inactive accounts.
+ * Description: Last-login tracking, 2FA and Last-login columns on the Users screen, a "Reset 2FA" action for Administrators, two-factor provider selection and the login block for Inactive accounts.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,12 +10,6 @@ const EARES_META_LAST_LOGIN = 'eares_last_login';
 
 /** Accounts without a login for this long are flagged on the Users screen. */
 const EARES_STALE_AFTER = YEAR_IN_SECONDS;
-
-/** Set when someone other than the user changes their email address. */
-const EARES_META_EMAIL_CHANGED = 'eares_email_changed_at';
-
-/** After such a change only an Administrator may reset the user's 2FA. */
-const EARES_RESET_2FA_EMAIL_COOLDOWN = WEEK_IN_SECONDS;
 
 /* -------------------------------------------------------------------------
  * Two-Factor plugin configuration
@@ -310,40 +304,6 @@ add_filter(
 	2
 );
 
-/**
- * Changing someone's email, resetting their 2FA and sending a password reset
- * to the new address would take over the account. So once another user has
- * changed an account's email, a User Manager cannot reset its 2FA for a week;
- * an Administrator still can. (The old address is told about the change.)
- */
-add_action(
-	'profile_update',
-	function ( $user_id, $old_user ) {
-		$user = get_userdata( $user_id );
-		if ( $user && $old_user->user_email !== $user->user_email && get_current_user_id() !== (int) $user_id ) {
-			update_user_meta( $user_id, EARES_META_EMAIL_CHANGED, time() );
-		}
-	},
-	10,
-	2
-);
-
-add_filter(
-	'map_meta_cap',
-	function ( $caps, $cap, $user_id, $args ) {
-		if ( EARES_CAP_RESET_2FA !== $cap || empty( $args[0] ) || eares_is_full_admin( $user_id ) ) {
-			return $caps;
-		}
-		$changed = (int) get_user_meta( (int) $args[0], EARES_META_EMAIL_CHANGED, true );
-		if ( $changed && ( time() - $changed ) < EARES_RESET_2FA_EMAIL_COOLDOWN ) {
-			$caps[] = 'do_not_allow';
-		}
-		return $caps;
-	},
-	20,
-	4
-);
-
 add_action(
 	'admin_post_eares_reset_2fa',
 	function () {
@@ -378,7 +338,7 @@ add_action(
 			sprintf( '[%s] %s', wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ), __( 'Επαναφορά επαλήθευσης δύο βημάτων', 'eares' ) ),
 			sprintf(
 				/* translators: 1: user display name, 2: who reset it, 3: login URL */
-				__( "Γεια σας %1\$s,\n\nΗ επαλήθευση δύο βημάτων (2FA) του λογαριασμού σας απενεργοποιήθηκε από τον/την %2\$s.\nΜπορείτε τώρα να συνδεθείτε μόνο με τον κωδικό σας και να την ενεργοποιήσετε ξανά από το προφίλ σας.\n\nΑν δεν το ζητήσατε εσείς, επικοινωνήστε αμέσως με τη γραμματεία.\n\n%3\$s\n", 'eares' ),
+				__( "Γεια σας %1\$s,\n\nΗ επαλήθευση δύο βημάτων (2FA) του λογαριασμού σας απενεργοποιήθηκε από τον/την %2\$s.\nΜπορείτε τώρα να συνδεθείτε μόνο με τον κωδικό σας και να την ενεργοποιήσετε ξανά από το προφίλ σας.\n\nΑν δεν το ζητήσατε εσείς, επικοινωνήστε αμέσως με τον διαχειριστή του ιστότοπου.\n\n%3\$s\n", 'eares' ),
 				$user->display_name,
 				$actor->display_name,
 				wp_login_url()
@@ -410,52 +370,10 @@ add_action(
  * Activity log visibility
  * ---------------------------------------------------------------------- */
 
-/** Only Administrators and User Managers see the Simple History log. */
+/** Only Administrators see the Simple History log. */
 add_filter(
 	'simple_history/view_history_capability',
 	function () {
-		return 'list_users';
-	}
-);
-
-/**
- * User Managers must not see what Administrators and other User Managers do,
- * nor what was done to them: hide every event whose context names a
- * protected account, by user ID or by login name.
- */
-add_filter(
-	'simple_history/log_query_inner_where_array',
-	function ( $inner_where ) {
-		if ( ! is_user_logged_in() || eares_is_full_admin( get_current_user_id() ) ) {
-			return $inner_where;
-		}
-
-		$protected = get_users(
-			array(
-				'role__in' => eares_protected_roles(),
-				'fields'   => array( 'ID', 'user_login' ),
-			)
-		);
-		if ( ! $protected ) {
-			return $inner_where;
-		}
-
-		global $wpdb;
-		$contexts   = $wpdb->prefix . 'simple_history_contexts';
-		$id_keys    = array( '_user_id', 'user_id', 'created_user_id', 'edited_user_id', 'deleted_user_id', 'old_user_id', 'reassign_user_id', 'reset_user_id' );
-		$login_keys = array( '_user_login', 'user_login', 'login', 'failed_username', 'created_user_login', 'edited_user_login', 'deleted_user_login', 'reset_user_login' );
-		$ids        = array_map( 'strval', wp_list_pluck( $protected, 'ID' ) );
-		$logins     = wp_list_pluck( $protected, 'user_login' );
-
-		$in = fn( $values ) => implode( ',', array_fill( 0, count( $values ), '%s' ) );
-
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders built above.
-		$inner_where[] = $wpdb->prepare(
-			"id NOT IN ( SELECT history_id FROM {$contexts} WHERE ( `key` IN ( {$in( $id_keys )} ) AND value IN ( {$in( $ids )} ) ) OR ( `key` IN ( {$in( $login_keys )} ) AND value IN ( {$in( $logins )} ) ) )",
-			array_merge( $id_keys, $ids, $login_keys, $logins )
-		);
-		// phpcs:enable
-
-		return $inner_where;
+		return 'manage_options';
 	}
 );
