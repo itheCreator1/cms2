@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: ΕΑΡΕΣ — Hardening
- * Description: Registration off, XML-RPC off, application passwords off, user enumeration limited to logged-in users, author URLs that do not reveal login names.
+ * Description: Self-registration only as Member, XML-RPC off, application passwords off, user enumeration limited to staff, author URLs that do not reveal login names.
  *
  * File editing / plugin installs are disabled in wp-config.php
  * (DISALLOW_FILE_EDIT, DISALLOW_FILE_MODS; see docker-compose.yml).
@@ -9,9 +9,10 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// Accounts are created only by Administrators and User Managers.
-add_filter( 'pre_option_users_can_register', '__return_zero' );
-add_filter( 'pre_option_default_role', fn() => 'contributor' );
+// Alumni sign up themselves (eares-registration.php) and always start as
+// Members, whatever the options table says.
+add_filter( 'pre_option_users_can_register', fn() => '1' );
+add_filter( 'pre_option_default_role', fn() => EARES_ROLE_MEMBER );
 
 // XML-RPC (legacy remote publishing, frequent brute-force target).
 if ( defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST ) {
@@ -31,11 +32,12 @@ add_filter(
 // Application passwords would bypass two-factor authentication.
 add_filter( 'wp_is_application_passwords_available', '__return_false' );
 
-// The REST users endpoint lists usernames; only logged-in users may use it.
+// The REST users endpoint lists usernames; only staff (who pick post
+// authors in the editor) may use it. Anonymous visitors and Members may not.
 add_filter(
 	'rest_endpoints',
 	function ( $endpoints ) {
-		if ( ! is_user_logged_in() ) {
+		if ( ! current_user_can( 'edit_posts' ) ) {
 			foreach ( array_keys( $endpoints ) as $route ) {
 				if ( 0 === strpos( $route, '/wp/v2/users' ) ) {
 					unset( $endpoints[ $route ] );
@@ -51,7 +53,7 @@ add_action(
 	'template_redirect',
 	function () {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( ! is_user_logged_in() && isset( $_GET['author'] ) ) {
+		if ( ! current_user_can( 'edit_posts' ) && isset( $_GET['author'] ) ) {
 			wp_safe_redirect( home_url( '/' ), 302 ); // Not 301: browsers would cache it for logged-in visits too.
 			exit;
 		}

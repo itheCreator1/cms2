@@ -28,6 +28,7 @@
 		<properties>
 			<property name="customSanitizingFunctions" type="array">
 				<element value="eares_sanitize_phone"/>
+				<element value="eares_sanitize_grad_year"/>
 			</property>
 		</properties>
 	</rule>

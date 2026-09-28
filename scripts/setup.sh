@@ -46,8 +46,8 @@ echo "Site settings..."
 wp option update blogname "$WP_TITLE"
 wp option update blogdescription "$WP_TAGLINE"
 wp option update admin_email "$WP_ADMIN_EMAIL"
-wp option update users_can_register 0
-wp option update default_role contributor
+wp option update users_can_register 1   # alumni sign up (eares-registration.php)
+wp option update default_role eares_member
 wp option update timezone_string "Europe/Athens"
 wp option update date_format "j F Y"
 wp option update time_format "H:i"
