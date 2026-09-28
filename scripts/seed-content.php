@@ -93,3 +93,65 @@ foreach ( $samples as $slug => list( $post_title, $category, $days_ago, $sticky,
 	}
 	WP_CLI::log( "  post: $post_title" );
 }
+
+// A members-only (Private) post with a members-only PDF: minutes of a board
+// meeting, the typical case.
+if ( ! get_page_by_path( 'praktika-ds-2026-09', OBJECT, 'post' ) ) {
+	$private_id = wp_insert_post(
+		array(
+			'post_type'     => 'post',
+			'post_status'   => 'private',
+			'post_name'     => 'praktika-ds-2026-09',
+			'post_title'    => 'Πρακτικά ΔΣ, Σεπτέμβριος 2026',
+			'post_date'     => wp_date( 'Y-m-d H:i:s', time() - 3 * DAY_IN_SECONDS ),
+			'post_category' => array( $sample_cat( 'anakoinoseis' ) ),
+		)
+	);
+
+	// A one-page PDF, written by hand so no library is needed.
+	$text    = 'BT /F1 24 Tf 72 760 Td (EARES - sample minutes) Tj ET';
+	$objects = array(
+		'<< /Type /Catalog /Pages 2 0 R >>',
+		'<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+		'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>',
+		'<< /Length ' . strlen( $text ) . " >>\nstream\n$text\nendstream",
+		'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+	);
+	$pdf     = "%PDF-1.4\n";
+	$offsets = array();
+	foreach ( $objects as $i => $object ) {
+		$offsets[] = strlen( $pdf );
+		$pdf      .= ( $i + 1 ) . " 0 obj\n$object\nendobj\n";
+	}
+	$xref = strlen( $pdf );
+	$pdf .= 'xref' . "\n0 " . ( count( $objects ) + 1 ) . "\n0000000000 65535 f \n";
+	foreach ( $offsets as $offset ) {
+		$pdf .= sprintf( "%010d 00000 n \n", $offset );
+	}
+	$pdf .= 'trailer << /Size ' . ( count( $objects ) + 1 ) . " /Root 1 0 R >>\nstartxref\n$xref\n%%EOF\n";
+	$file = get_temp_dir() . 'praktika-ds-2026-09.pdf';
+	file_put_contents( $file, $pdf ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+
+	$pdf_id = media_handle_sideload(
+		array(
+			'name'     => 'praktika-ds-2026-09.pdf',
+			'tmp_name' => $file,
+		),
+		$private_id,
+		'Πρακτικά ΔΣ, Σεπτέμβριος 2026 (δοκιμή)'
+	);
+	if ( ! is_wp_error( $pdf_id ) ) {
+		eares_set_members_only( $pdf_id, true );
+		$url = wp_get_attachment_url( $pdf_id );
+		wp_update_post(
+			array(
+				'ID'           => $private_id,
+				'post_content' => "<!-- wp:paragraph -->\n<p>$lorem</p>\n<!-- /wp:paragraph -->\n\n"
+					. "<!-- wp:file {\"id\":$pdf_id,\"href\":\"" . esc_url( $url ) . "\"} -->\n"
+					. '<div class="wp-block-file"><a href="' . esc_url( $url ) . '">Πρακτικά ΔΣ (PDF)</a><a href="' . esc_url( $url ) . "\" class=\"wp-block-file__button wp-element-button\" download>Λήψη</a></div>\n"
+					. '<!-- /wp:file -->',
+			)
+		);
+	}
+	WP_CLI::log( '  private post: Πρακτικά ΔΣ, Σεπτέμβριος 2026 (with a members-only PDF)' );
+}

@@ -13,11 +13,9 @@ if ( '' === $password ) {
 
 // login => email, role, display name, phone.
 $users = array(
-	'test-usermanager' => array( 'usermanager@eares.local', 'eares_user_manager', 'Γραμματεία (δοκιμή)', '210 000 0001' ),
-	'test-editor'      => array( 'editor@eares.local', 'editor', 'Μέλος ΔΣ (δοκιμή)', '210 000 0002' ),
-	'test-author'      => array( 'author@eares.local', 'author', 'Απόφοιτος Author (δοκιμή)', '210 000 0003' ),
-	'test-contributor' => array( 'contributor@eares.local', 'contributor', 'Απόφοιτος Contributor (δοκιμή)', '210 000 0004' ),
-	'test-inactive'    => array( 'inactive@eares.local', 'eares_inactive', 'Πρώην μέλος ΔΣ (δοκιμή)', '210 000 0005' ),
+	'test-editor'   => array( 'editor@eares.local', 'editor', 'Μέλος ΔΣ (δοκιμή)', '210 000 0002' ),
+	'test-member'   => array( 'member@eares.local', 'eares_member', 'Απόφοιτος Μέλος (δοκιμή)', '210 000 0003' ),
+	'test-inactive' => array( 'inactive@eares.local', 'eares_inactive', 'Πρώην μέλος ΔΣ (δοκιμή)', '210 000 0005' ),
 );
 
 foreach ( $users as $login => list( $email, $user_role, $name, $phone ) ) {
@@ -41,6 +39,16 @@ foreach ( $users as $login => list( $email, $user_role, $name, $phone ) ) {
 	}
 	update_user_meta( $user_id, 'eares_phone', $phone );
 	WP_CLI::log( "  $login ($user_role) id=$user_id" );
+}
+
+// Test accounts of roles that no longer exist.
+require_once ABSPATH . 'wp-admin/includes/user.php';
+foreach ( array( 'test-usermanager', 'test-author', 'test-contributor' ) as $retired ) {
+	$old = get_user_by( 'login', $retired );
+	if ( $old ) {
+		wp_delete_user( $old->ID );
+		WP_CLI::log( "  removed $retired" );
+	}
 }
 
 // A post by the inactive user, to check it stays published.
