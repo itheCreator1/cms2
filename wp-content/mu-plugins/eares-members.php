@@ -191,6 +191,33 @@ add_filter(
 	5
 );
 
+/*
+ * A File block stores the file's address when it is inserted. Rewrite it on
+ * output, so ticking or unticking "Μόνο για μέλη" later never leaves a post
+ * pointing at the old (now missing, or unprotected) address.
+ */
+add_filter(
+	'render_block_core/file',
+	function ( $content, $block ) {
+		$attachment_id = (int) ( $block['attrs']['id'] ?? 0 );
+		$old_href      = (string) ( $block['attrs']['href'] ?? '' );
+		if ( ! $attachment_id || '' === $old_href || 'attachment' !== get_post_type( $attachment_id ) ) {
+			return $content;
+		}
+		$href = wp_get_attachment_url( $attachment_id );
+		if ( $href && $href !== $old_href ) {
+			$content = str_replace(
+				array( esc_url( $old_href ), esc_attr( $old_href ) ),
+				esc_url( $href ),
+				$content
+			);
+		}
+		return $content;
+	},
+	10,
+	2
+);
+
 // Anonymous visitors and REST clients without the capability do not see
 // members-only files in the media endpoint.
 add_filter(
@@ -218,9 +245,15 @@ add_action(
 			return;
 		}
 
-		if ( 'attachment' !== get_post_type( $attachment_id ) || ! eares_is_members_only_file( $attachment_id ) ) {
+		if ( 'attachment' !== get_post_type( $attachment_id ) ) {
 			status_header( 404 );
 			nocache_headers();
+			exit;
+		}
+
+		// Public again since the link was made: send to the public address.
+		if ( ! eares_is_members_only_file( $attachment_id ) ) {
+			wp_safe_redirect( wp_get_attachment_url( $attachment_id ) );
 			exit;
 		}
 

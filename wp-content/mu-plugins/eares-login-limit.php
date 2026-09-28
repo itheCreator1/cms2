@@ -60,7 +60,7 @@ function eares_login_locked_for( $username ) {
 }
 
 /**
- * Runs after every other check (core 20, Inactive 25, Two-Factor 31): core's
+ * Runs after every other check (core 20, no-role block 25, Two-Factor 31): core's
  * password check would overwrite an earlier error, and a locked-out visitor
  * must be refused even with the right password.
  */

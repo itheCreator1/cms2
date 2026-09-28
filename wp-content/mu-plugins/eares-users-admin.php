@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: ΕΑΡΕΣ — Users admin
- * Description: Last-login tracking, 2FA and Last-login columns on the Users screen, a "Reset 2FA" action for Administrators, two-factor provider selection and the login block for Inactive accounts.
+ * Description: Last-login tracking, 2FA and Last-login columns on the Users screen, a "Reset 2FA" action, two-factor provider selection and a login block for accounts without a role.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -65,20 +65,24 @@ function eares_two_factor_meta_keys() {
 }
 
 /* -------------------------------------------------------------------------
- * Inactive role: no login
+ * Accounts without a role: no login
  * ---------------------------------------------------------------------- */
 
 /**
+ * WordPress lets a user with no role on the site log in to an empty
+ * dashboard. Here they are refused, so "No role for this site" is a safe
+ * way to lock someone out while deciding whether to delete the account.
+ *
  * Runs after the username/email/application password checks (priority 20)
- * and before Two-Factor (31), so an Inactive account never gets a session.
+ * and before Two-Factor (31), so such an account never gets a session.
  */
 add_filter(
 	'authenticate',
 	function ( $user ) {
-		if ( $user instanceof WP_User && in_array( EARES_ROLE_INACTIVE, (array) $user->roles, true ) ) {
+		if ( $user instanceof WP_User && ! $user->roles ) {
 			return new WP_Error(
-				'eares_inactive',
-				__( '<strong>Σφάλμα:</strong> Ο λογαριασμός σας είναι ανενεργός. Επικοινωνήστε με τη γραμματεία της ΕΑΡΕΣ.', 'eares' )
+				'eares_no_role',
+				__( '<strong>Σφάλμα:</strong> Ο λογαριασμός σας δεν είναι ενεργός. Επικοινωνήστε με τον διαχειριστή του ιστότοπου.', 'eares' )
 			);
 		}
 		return $user;
@@ -86,11 +90,11 @@ add_filter(
 	25
 );
 
-/** Log out an account everywhere as soon as it becomes Inactive. */
+/** Log out an account everywhere as soon as it loses its last role. */
 add_action(
 	'set_user_role',
 	function ( $user_id, $role ) {
-		if ( EARES_ROLE_INACTIVE === $role ) {
+		if ( '' === (string) $role ) {
 			WP_Session_Tokens::get_instance( $user_id )->destroy_all();
 		}
 	},

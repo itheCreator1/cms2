@@ -11,11 +11,11 @@ if ( '' === $password ) {
 	WP_CLI::error( 'Set EARES_PASSWORD (see seed-users.sh).' );
 }
 
-// login => email, role, display name, phone.
+// login => email, role ('' for none), display name, phone.
 $users = array(
-	'test-editor'   => array( 'editor@eares.local', 'editor', 'Μέλος ΔΣ (δοκιμή)', '210 000 0002' ),
-	'test-member'   => array( 'member@eares.local', 'eares_member', 'Απόφοιτος Μέλος (δοκιμή)', '210 000 0003' ),
-	'test-inactive' => array( 'inactive@eares.local', 'eares_inactive', 'Πρώην μέλος ΔΣ (δοκιμή)', '210 000 0005' ),
+	'test-staff'  => array( 'staff@eares.local', 'administrator', 'Μέλος ΔΣ (δοκιμή)', '210 000 0002' ),
+	'test-member' => array( 'member@eares.local', 'eares_member', 'Απόφοιτος Μέλος (δοκιμή)', '210 000 0003' ),
+	'test-norole' => array( 'norole@eares.local', '', 'Χωρίς ρόλο (δοκιμή)', '210 000 0005' ),
 );
 
 foreach ( $users as $login => list( $email, $user_role, $name, $phone ) ) {
@@ -38,34 +38,16 @@ foreach ( $users as $login => list( $email, $user_role, $name, $phone ) ) {
 		WP_CLI::error( "$login: " . $user_id->get_error_message() );
 	}
 	update_user_meta( $user_id, 'eares_phone', $phone );
+	update_user_meta( $user_id, 'eares_grad_year', '1998' );
 	WP_CLI::log( "  $login ($user_role) id=$user_id" );
 }
 
 // Test accounts of roles that no longer exist.
 require_once ABSPATH . 'wp-admin/includes/user.php';
-foreach ( array( 'test-usermanager', 'test-author', 'test-contributor' ) as $retired ) {
+foreach ( array( 'test-usermanager', 'test-author', 'test-contributor', 'test-editor', 'test-inactive' ) as $retired ) {
 	$old = get_user_by( 'login', $retired );
 	if ( $old ) {
 		wp_delete_user( $old->ID );
 		WP_CLI::log( "  removed $retired" );
 	}
-}
-
-// A post by the inactive user, to check it stays published.
-$inactive = get_user_by( 'login', 'test-inactive' );
-if ( ! get_posts(
-	array(
-		'author'      => $inactive->ID,
-		'post_status' => 'any',
-		'fields'      => 'ids',
-	)
-) ) {
-	wp_insert_post(
-		array(
-			'post_author'  => $inactive->ID,
-			'post_status'  => 'publish',
-			'post_title'   => 'Δοκιμαστική ανακοίνωση πρώην μέλους ΔΣ',
-			'post_content' => 'Αυτό το άρθρο πρέπει να παραμένει δημοσιευμένο ενώ ο λογαριασμός είναι ανενεργός.',
-		)
-	);
 }

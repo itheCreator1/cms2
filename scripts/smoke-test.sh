@@ -91,10 +91,10 @@ wp transient delete --all >/dev/null
 
 echo "Login limit:"
 wp transient delete --all >/dev/null
-for _ in 1 2 3 4 5; do login test-editor wrong-password >/dev/null; done
+for _ in 1 2 3 4 5; do login test-member wrong-password >/dev/null; done
 # Capture first: with pipefail, `curl | grep -q` fails when grep exits early
 # and curl dies of SIGPIPE on a large page, even though grep matched.
-body="$(login test-editor "$SEED_PASSWORD")"
+body="$(login test-member "$SEED_PASSWORD")"
 if grep -q 'Πάρα πολλές αποτυχημένες' <<<"$body"; then
   check "Right password is refused after 5 failures" locked locked
 else
